@@ -14,6 +14,15 @@
     <script src="https://vk.com/js/api/openapi.js" type="text/javascript"></script>
 
     <script>
+var config =
+{
+  ownerId: OWNER_ID,
+  albumFrom: ALBUM_FROM_ID,
+  albumTo: ALBUM_TO_ID,
+  offset: OFFSET,
+  count: IF_0_THEN_ALL
+}
+
 VK.init({
   apiId: 4656821
 });
@@ -31,7 +40,7 @@ function move(i, photos)
   {
     console.log('Begin moving photo with id: ' + photos[i].pid + '...');
 
-    VK.Api.call('photos.move', {owner_id: YOUR_OR_GROUP_ID, target_album_id: ALBUM_TO_ID, photo_id: photos[i].pid}, function(r)
+    VK.Api.call('photos.move', {owner_id: config.ownerId, target_album_id: config.albumTo, photo_id: photos[i].pid}, function(r2)
     {
       console.log('Finish moving photo with id: ' + photos[i].pid);
 
@@ -44,16 +53,21 @@ function action(response)
 {
   if (response.session)
   {
-    VK.Api.call('photos.get', {owner_id: YOUR_OR_GROUP_ID, album_id: ALBUM_FROM_ID, offset: IF_ALL_REMOVE_THIS, count: IF_ALL_REMOVE_THIS}, function(r)
+    var a = {owner_id: config.ownerId, album_id: config.albumFrom, offset: config.offset};
+    
+    if (config.count != 0)
+      a.count = config.count;
+
+    VK.Api.call('photos.get', a, function(r)
     {
       move(0, r.response);
     });
   }
   else
   {
-    console.error('Error with auth!');
+    console.error('Error with auth :(');
   }
 }
-    </script>
+    </script>  
   </body>
 </html>
